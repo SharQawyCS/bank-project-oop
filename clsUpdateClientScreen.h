@@ -24,7 +24,7 @@ private:
     cout << "\n___________________\n";
   }
 
-  static void _ReadClientInfo(clsBankClient &Client)
+  static void ReadClientInfo(clsBankClient &Client)
   {
     cout << "\nEnter FirstName: ";
     Client.SetFirstName(clsInputValidate::ReadString());
@@ -34,6 +34,7 @@ private:
 
     cout << "\nEnter Email: ";
     Client.SetEmail(clsInputValidate::ReadString());
+
     cout << "\nEnter Phone: ";
     Client.SetPhone(clsInputValidate::ReadString());
 
@@ -47,6 +48,10 @@ private:
 public:
   static void ShowUpdateClientScreen()
   {
+    if (!CheckAccessRights(clsUser::enPermissions::pUpdateClients))
+    {
+      return; // this will exit the function and it will not continue
+    }
 
     _DrawScreenHeader("\tUpdate Client Screen");
 
@@ -76,7 +81,7 @@ public:
       cout << "\n\nUpdate Client Info:";
       cout << "\n____________________\n";
 
-      _ReadClientInfo(Client1);
+      ReadClientInfo(Client1);
 
       clsBankClient::enSaveResults SaveResult;
 

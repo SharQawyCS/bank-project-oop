@@ -1,11 +1,14 @@
 #include <iostream>
-#include "clsMainScreen.h"
-
+#include "clsLoginScreen.h"
+#include "Global.h"
 int main()
 
 {
 
-  clsMainScreen::ShowMainMenue();
+  while (true)
+  {
+    clsLoginScreen::ShowLoginScreen();
+  }
 
   return 0;
 }

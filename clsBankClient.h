@@ -188,21 +188,6 @@ public:
     return _AccountBalance;
   }
 
-  void Print()
-  {
-    cout << "\nClient Card:";
-    cout << "\n___________________";
-    cout << "\nFirstName   : " << GetFirstName();
-    cout << "\nLastName    : " << GetLastName();
-    cout << "\nFull Name   : " << FullName();
-    cout << "\nEmail       : " << GetEmail();
-    cout << "\nPhone       : " << GetPhone();
-    cout << "\nAcc. Number : " << _AccountNumber;
-    cout << "\nPassword    : " << _PinCode;
-    cout << "\nBalance     : " << _AccountBalance;
-    cout << "\n___________________\n";
-  }
-
   static clsBankClient Find(string AccountNumber)
   {
 
@@ -301,7 +286,7 @@ public:
       break;
     }
     }
-    return enSaveResults::svSucceeded;
+    return enSaveResults::svFaildEmptyObject;
   }
 
   static bool IsClientExist(string AccountNumber)
@@ -342,7 +327,20 @@ public:
     return _LoadClientsDataFromFile();
   }
 
-  static float GetTotalBalances()
+  void Deposit(double Amount)
+  {
+    _AccountBalance += Amount;
+    Save();
+  }
+
+  bool Withdraw(double Amount)
+  {
+    _AccountBalance -= Amount;
+    Save();
+    return true;
+  }
+
+  static double GetTotalBalances()
   {
     vector<clsBankClient> vClients = clsBankClient::GetClientsList();
 
