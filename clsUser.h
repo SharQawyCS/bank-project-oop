@@ -3,13 +3,15 @@
 #include <string>
 #include "clsPerson.h"
 #include "clsString.h"
-#include "clsDate.h"
 #include <vector>
 #include <fstream>
+#include "clsDate.h"
 
 using namespace std;
 class clsUser : public clsPerson
 {
+  friend class clsLoginRegisterScreen;
+
 private:
   enum enMode
   {
@@ -23,6 +25,36 @@ private:
   int _Permissions;
 
   bool _MarkedForDelete = false;
+
+  struct stLoginRegisterRecord
+  {
+    string DateTime;
+    string UserName;
+    string Password;
+    int Permissions;
+  };
+  static stLoginRegisterRecord _ConvertLoginRegisterLineToRecord(string Line, string Seperator = "#//#")
+  {
+    stLoginRegisterRecord LoginRegisterRecord;
+
+    vector<string> LoginRegisterDataLine = clsString::Split(Line, Seperator);
+    LoginRegisterRecord.DateTime = LoginRegisterDataLine[0];
+    LoginRegisterRecord.UserName = LoginRegisterDataLine[1];
+    LoginRegisterRecord.Password = LoginRegisterDataLine[2];
+    LoginRegisterRecord.Permissions = stoi(LoginRegisterDataLine[3]);
+
+    return LoginRegisterRecord;
+  }
+
+  string _PrepareLogInRecord(string Seperator = "#//#")
+  {
+    string LoginRecord = "";
+    LoginRecord += clsDate::GetSystemDateTimeString() + Seperator;
+    LoginRecord += GetUserName() + Seperator;
+    LoginRecord += GetPassword() + Seperator;
+    LoginRecord += to_string(GetPermissions());
+    return LoginRecord;
+  }
 
   static clsUser _ConvertLinetoUserObject(string Line, string Seperator = "#//#")
   {
@@ -142,16 +174,6 @@ private:
     return clsUser(enMode::EmptyMode, "", "", "", "", "", "", 0);
   }
 
-  string _PrepareLogInRecord(string Seperator = "#//#")
-  {
-    string LoginRecord = "";
-    LoginRecord += clsDate::GetSystemDateTimeString() + Seperator;
-    LoginRecord += GetUserName() + Seperator;
-    LoginRecord += GetPassword() + Seperator;
-    LoginRecord += to_string(GetPermissions());
-    return LoginRecord;
-  }
-
 public:
   enum enPermissions
   {
@@ -162,8 +184,17 @@ public:
     pUpdateClients = 8,
     pFindClient = 16,
     pTranactions = 32,
-    pManageUsers = 64
+    pManageUsers = 64,
+    pShowLogInRegister = 128
   };
+
+  // struct stLoginRegisterRecord
+  // {
+  //   string DateTime;
+  //   string UserName;
+  //   string Password;
+  //   int Permissions;
+  // };
 
   clsUser(enMode Mode, string FirstName, string LastName,
           string Email, string Phone, string UserName, string Password,
@@ -310,7 +341,6 @@ public:
       break;
     }
     }
-    return enSaveResults::svFaildEmptyObject;
   }
 
   static bool IsUserExist(string UserName)
@@ -377,5 +407,33 @@ public:
 
       MyFile.close();
     }
+  }
+
+  static vector<stLoginRegisterRecord> GetLoginRegisterList()
+  {
+    vector<stLoginRegisterRecord> vLoginRegisterRecord;
+
+    fstream MyFile;
+    MyFile.open("LoginRegister.txt", ios::in); // read Mode
+
+    if (MyFile.is_open())
+    {
+
+      string Line;
+
+      stLoginRegisterRecord LoginRegisterRecord;
+
+      while (getline(MyFile, Line))
+      {
+
+        LoginRegisterRecord = _ConvertLoginRegisterLineToRecord(Line);
+
+        vLoginRegisterRecord.push_back(LoginRegisterRecord);
+      }
+
+      MyFile.close();
+    }
+
+    return vLoginRegisterRecord;
   }
 };
