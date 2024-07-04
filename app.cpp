@@ -1,13 +1,15 @@
 #include <iostream>
 #include "clsLoginScreen.h"
-#include "Global.h"
+
 int main()
 
 {
-
   while (true)
   {
-    clsLoginScreen::ShowLoginScreen();
+    if (!clsLoginScreen::ShowLoginScreen())
+    {
+      break;
+    }
   }
 
   return 0;
